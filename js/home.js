@@ -36,15 +36,23 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             let productsHTML = '';
             randomProducts.forEach(product => {
+                let addToCartButtonHTML = '';
+                const token = localStorage.getItem('pocketbase_token');
+                if (token) {
+                    addToCartButtonHTML = `<button class="btn btn-primary add-to-cart-btn mt-auto" data-product-id="${product.id}">Add to Cart</button>`;
+                } else {
+                    addToCartButtonHTML = '';
+                }
+
                 productsHTML += `
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 d-flex flex-column">
                             <img src="${product.image_url}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-                            <div class="card-body d-flex flex-column">
+                            <div class="card-body d-flex flex-column flex-grow-1">
                                 <h5 class="card-title">${product.name}</h5>
                                 <p class="card-text flex-grow-1">${product.description.substring(0, 100)}${product.description.length > 100 ? '...' : ''}</p>
                                 <p class="card-text"><strong>Price: Rp ${product.price.toLocaleString('id-ID')}</strong></p>
-                                <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}">Add to Cart</button>
+                                ${addToCartButtonHTML}
                             </div>
                         </div>
                     </div>`;
