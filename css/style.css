@@ -160,6 +160,40 @@ main > .alert { /* For messages like "Logout successful" directly in main */
     margin-bottom: 1rem;
 }
 
+/* Universal Modal Styling */
+#auth-user-modal .modal-dialog {
+    max-width: 500px; /* Default width, can be overridden by modal-lg etc. if needed */
+}
+
+#auth-user-modal .modal-body .form-label { /* Example: if labels inside modal need specific styling */
+    font-weight: 500; /* Slightly bolder than default for better readability in modal */
+}
+
+#auth-user-modal .modal-body .alert { /* Styling for messages inside modal */
+    margin-top: 1rem;
+    margin-bottom: 0; /* Usually messages are last element in modal body */
+}
+
+#auth-user-modal .modal-footer button {
+    min-width: 90px; /* Give footer buttons some minimum width */
+}
+
+/* Specific styling for profile view in modal */
+#auth-user-modal-body .profile-view-container {
+    padding: 10px;
+}
+
+#auth-user-modal-body .profile-view-container p {
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+#auth-user-modal-body .profile-view-container p strong {
+    color: #343a40;
+    min-width: 100px;
+    display: inline-block;
+}
+
 
 @media (max-width: 768px) {
     #hero h1 {
@@ -200,7 +234,14 @@ main > .alert { /* For messages like "Logout successful" directly in main */
     h2 {
         font-size: 1.5rem;
     }
-    #registration-form-container,
+    /* Adjust modal width for smaller screens if 500px is too wide */
+    #auth-user-modal .modal-dialog {
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #registration-form-container, /* These might become obsolete if forms are only in modal */
     #login-form-container {
         padding: 20px;
     }
