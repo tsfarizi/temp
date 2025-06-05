@@ -33,6 +33,14 @@ h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     color: #343a40 !important;
+    display: flex; /* For aligning icon and text */
+    align-items: center; /* For aligning icon and text */
+}
+
+.navbar-brand-icon {
+    font-size: 1.3em; /* Adjust as needed */
+    margin-right: 8px; /* Spacing between icon and text */
+    line-height: 1; /* Ensure it doesn't affect line height of text */
 }
 
 .navbar-light .navbar-nav .nav-link.active {
@@ -63,12 +71,102 @@ footer.bg-dark {
     margin-top: auto; /* Pushes footer to bottom if main content is short */
 }
 
+/* Homepage Hero Banner Styling */
+#hero {
+    background-image: url('../assets/gunung/bromo.jpg'); /* Moved from inline */
+    background-size: cover;
+    background-position: center;
+    color: white; /* Default text color for banner */
+    position: relative; /* Needed for overlay positioning */
+    padding-top: 5rem; /* Re-apply padding as needed, was py-5 */
+    padding-bottom: 5rem; /* Re-apply padding as needed, was py-5 */
+}
+
+#hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.55); /* Adjust transparency */
+    z-index: 1; /* Place overlay above background, below content */
+}
+
+#hero .hero-content { /* Target the div wrapping H1 and P */
+    position: relative;
+    z-index: 2; /* Ensure banner content (text) is above the overlay */
+    padding: 20px; /* Similar to the padding the removed div had */
+    border-radius: 10px; /* Similar to the radius the removed div had */
+    /* background-color: rgba(0,0,0,0.1); /* Optional: very subtle bg for content if needed */
+}
+
+#hero h1.fw-light {
+    color: white; /* Ensure high contrast */
+    font-weight: 600 !important; /* Poppins light might be too thin on an image */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3); /* Optional: subtle shadow for readability */
+}
+
+#hero p.lead {
+    color: #f0f0f0; /* Slightly off-white for p if needed, or keep white */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Optional */
+    font-size: 1.25rem; /* Ensure it's legible */
+}
+
+
+/* Styling for dynamically added auth forms and profile messages */
+/* Using specific IDs from auth.js to scope styles */
+#registration-form-container,
+#login-form-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: 2rem; /* Add some space from navbar/previous content */
+    margin-bottom: 2rem;
+}
+
+#registration-form-container h2,
+#login-form-container h2 {
+    margin-bottom: 1.5rem; /* Space below "Register" / "Login" title */
+}
+
+#registration-message,
+#login-message {
+    margin-top: 15px; /* Space for alert messages within forms */
+}
+
+/* User Profile Styling */
+#user-profile-container {
+    margin-top: 2rem; /* Add some space */
+    margin-bottom: 2rem;
+}
+
+#user-profile-container .card {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+#user-profile-container .card-body p {
+    margin-bottom: 0.75rem; /* Adjust spacing between profile items */
+}
+
+#user-profile-container .card-body p strong {
+    color: #343a40;
+}
+
+/* General alert messages that might be added to main by auth.js */
+main > .alert { /* For messages like "Logout successful" directly in main */
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+
 @media (max-width: 768px) {
     #hero h1 {
         font-size: 2.2rem;
     }
     #hero .lead {
-        font-size: 0.95rem;
+        font-size: 1.1rem; /* Adjusted from 0.95rem for better visibility on banner */
     }
     .card-title {
         font-size: 1.05rem;
@@ -86,11 +184,15 @@ footer.bg-dark {
     .navbar-brand {
         font-size: 1.25rem;
     }
+    .navbar-brand-icon {
+        font-size: 1.2em; /* Adjust for smaller screens if needed */
+        margin-right: 6px;
+    }
     #hero h1 {
         font-size: 1.8rem;
     }
     #hero .lead {
-        font-size: 0.9rem;
+        font-size: 1rem; /* Adjusted from 0.9rem */
     }
     .card-title {
         font-size: 1rem;
@@ -98,6 +200,8 @@ footer.bg-dark {
     h2 {
         font-size: 1.5rem;
     }
-    /* Bootstrap's mb-4 is 1.5rem, which is usually sufficient. Explicitly setting for .col-sm-6 if needed */
-    /* #product-list-row .col-sm-6 { margin-bottom: 1.5rem !important; } */
+    #registration-form-container,
+    #login-form-container {
+        padding: 20px;
+    }
 }
