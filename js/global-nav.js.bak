@@ -44,7 +44,7 @@ window.updateCartLink = async function() {
         cartLink.href = 'cart.html';
         cartLink.id = 'cart-nav-link'; // Assign an ID for future updates
 
-        cartLink.textContent = 'Keranjang '; // Add a space for the badge
+        cartLink.textContent = 'Cart '; // Add a space for the badge
 
         cartItemCountBadge = document.createElement('span');
         cartItemCountBadge.classList.add('badge', 'bg-primary'); // Bootstrap badge classes

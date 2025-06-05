@@ -70,31 +70,31 @@ function showRegistrationForm() {
     }
     clearModalContentAndHide(true);
 
-    modalTitleElement.textContent = 'Daftar';
+    modalTitleElement.textContent = 'Register';
     modalBodyElement.innerHTML = `
         <form id="registration-form">
             <div class="mb-3">
-                <label for="register-name" class="form-label">Nama Lengkap</label>
+                <label for="register-name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="register-name" required>
             </div>
             <div class="mb-3">
-                <label for="email" class="form-label">Alamat email</label>
+                <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="email" required>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Kata sandi (min. 8 karakter)</label>
+                <label for="password" class="form-label">Password (min. 8 characters)</label>
                 <input type="password" class="form-control" id="password" required>
             </div>
             <div class="mb-3">
-                <label for="passwordConfirm" class="form-label">Konfirmasi Kata Sandi</label>
+                <label for="passwordConfirm" class="form-label">Confirm Password</label>
                 <input type="password" class="form-control" id="passwordConfirm" required>
             </div>
             <div id="registration-message-modal" class="mt-3"></div>
-            <button type="submit" class="btn btn-primary w-100 mt-2">Daftar</button>
+            <button type="submit" class="btn btn-primary w-100 mt-2">Register</button>
         </form>
-        <p class="mt-3 text-center">Sudah punya akun? <a href="#" id="show-login-from-modal-register">Masuk di sini</a></p>
+        <p class="mt-3 text-center">Already have an account? <a href="#" id="show-login-from-modal-register">Login here</a></p>
     `;
-    modalFooterElement.innerHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
+    modalFooterElement.innerHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
 
     if(!authUserModal._isShown) authUserModal.show();
 
@@ -117,7 +117,7 @@ function showRegistrationForm() {
                 return;
             }
             if (password !== passwordConfirm) {
-                displayMessageInModal('Kata sandi tidak cocok.', 'danger', 'registration-message-modal');
+                displayMessageInModal('Passwords do not match.', 'danger', 'registration-message-modal');
                 return;
             }
             if (password.length < 8) {
@@ -135,7 +135,7 @@ function showRegistrationForm() {
                 const data = await response.json();
                 if (response.ok) {
                     registrationForm.reset();
-                    displayMessageInModal('Pendaftaran berhasil! Silakan masuk.', 'success', 'registration-message-modal');
+                    displayMessageInModal('Registration successful! Please login.', 'success', 'registration-message-modal');
                     setTimeout(() => {
                         showLoginForm();
                     }, 1500);
@@ -160,23 +160,23 @@ function showLoginForm() {
     }
     clearModalContentAndHide(true);
 
-    modalTitleElement.textContent = 'Masuk';
+    modalTitleElement.textContent = 'Login';
     modalBodyElement.innerHTML = `
         <form id="login-form">
             <div class="mb-3">
-                <label for="loginEmail" class="form-label">Alamat email</label>
-                <input type="email" class="form-control" id="loginEmail" placeholder="Masukkan email" required>
+                <label for="loginEmail" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="loginEmail" required>
             </div>
             <div class="mb-3">
-                <label for="loginPassword" class="form-label">Kata sandi</label>
-                <input type="password" class="form-control" id="loginPassword" placeholder="Kata sandi" required>
+                <label for="loginPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="loginPassword" required>
             </div>
             <div id="login-message-modal" class="mt-3"></div>
-            <button type="submit" class="btn btn-primary w-100 mt-2">Masuk</button>
+            <button type="submit" class="btn btn-primary w-100 mt-2">Login</button>
         </form>
-        <p class="mt-3 text-center">Belum punya akun? <a href="#" id="show-register-from-modal-login">Daftar di sini</a></p>
+        <p class="mt-3 text-center">Don't have an account? <a href="#" id="show-register-from-modal-login">Register here</a></p>
     `;
-    modalFooterElement.innerHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
+    modalFooterElement.innerHTML = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
     if(!authUserModal._isShown) authUserModal.show();
 
     document.getElementById('show-register-from-modal-login')?.addEventListener('click', (e) => {
@@ -241,7 +241,7 @@ async function showUserProfile() {
         modalTitleElement.textContent = 'Access Denied';
         modalBodyElement.innerHTML = '<p>You are not logged in. Please login to view your profile.</p>';
         modalFooterElement.innerHTML = `
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary" id="login-from-profile-modal">Login</button>
         `;
         if(!authUserModal._isShown) authUserModal.show();
@@ -252,10 +252,10 @@ async function showUserProfile() {
         return;
     }
 
-    modalTitleElement.textContent = 'Profil Pengguna';
+    modalTitleElement.textContent = 'User Profile';
     modalBodyElement.innerHTML = '<p>Loading profile...</p>';
     modalFooterElement.innerHTML = `
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="edit-profile-button">Edit Profile</button>
         <button type="button" class="btn btn-danger" id="logout-from-profile-modal">Logout</button>
     `;
@@ -302,7 +302,7 @@ async function showUserProfile() {
                 localStorage.removeItem('pocketbase_user_name');
                 updateNavbar();
                 modalFooterElement.innerHTML = `
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="login-again-modal">Login</button>`;
                 document.getElementById('login-again-modal')?.addEventListener('click', showLoginForm);
             }
@@ -323,20 +323,20 @@ function showEditProfileForm(userData) {
     }
     clearModalContentAndHide(true);
 
-    modalTitleElement.textContent = 'Ubah Profil';
+    modalTitleElement.textContent = 'Edit Profile';
     modalBodyElement.innerHTML = `
         <form id="edit-profile-form">
             <div class="mb-3">
-                <label for="edit-name" class="form-label">Nama Lengkap</label>
-                <input type="text" class="form-control" id="edit-name" value="${userData.name || ''}" placeholder="Masukkan nama lengkap Anda" required>
+                <label for="edit-name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="edit-name" value="${userData.name || ''}" required>
             </div>
             <div class="mb-3">
-                <label for="edit-email" class="form-label">Alamat email</label>
-                <input type="email" class="form-control" id="edit-email" value="${userData.email || ''}" placeholder="Masukkan email" required>
+                <label for="edit-email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="edit-email" value="${userData.email || ''}" required>
             </div>
             <div class="mb-3">
-                <label for="edit-address" class="form-label">Alamat</label>
-                <textarea class="form-control" id="edit-address" rows="3" placeholder="Masukkan alamat Anda">${userData.address || ''}</textarea>
+                <label for="edit-address" class="form-label">Address</label>
+                <textarea class="form-control" id="edit-address" rows="3">${userData.address || ''}</textarea>
             </div>
             <!-- Username editing can be added if PocketBase schema allows and it's desired -->
             <!-- <div class="mb-3">
@@ -347,8 +347,8 @@ function showEditProfileForm(userData) {
         </form>
     `;
     modalFooterElement.innerHTML = `
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancel-edit-profile">Batal</button>
-        <button type="button" class="btn btn-primary" id="save-profile-changes">Simpan Perubahan</button>
+        <button type="button" class="btn btn-secondary" id="cancel-edit-profile">Cancel</button>
+        <button type="button" class="btn btn-primary" id="save-profile-changes">Save Changes</button>
     `;
 
     if(!authUserModal._isShown) authUserModal.show();
@@ -404,17 +404,17 @@ function showEditProfileForm(userData) {
             const responseData = await response.json();
 
             if (response.ok) {
-                displayMessageInModal('Profil berhasil diperbarui.', 'success', 'edit-profile-message-modal');
+                displayMessageInModal('Profile updated successfully!', 'success', 'edit-profile-message-modal');
                 // Update localStorage if relevant fields changed
-                if (updatedData.name) localStorage.setItem('pocketbase_user_name', responseData.name); // Use responseData
-                if (updatedData.email) localStorage.setItem('pocketbase_user_email', responseData.email); // Use responseData
+                if (updatedData.name) localStorage.setItem('pocketbase_user_name', updatedData.name);
+                if (updatedData.email) localStorage.setItem('pocketbase_user_email', updatedData.email);
 
                 currentUserDataForEdit = responseData; // Update with latest data from server
                 setTimeout(() => {
                     showUserProfile(); // Refresh profile view
                 }, 1000);
             } else {
-                let errorMessage = 'Gagal memperbarui profil.';
+                let errorMessage = 'Failed to update profile.';
                 if (responseData?.data) errorMessage = Object.values(responseData.data).map(err => err.message).join(' ');
                 else if (responseData?.message) errorMessage = responseData.message;
                 displayMessageInModal(errorMessage, 'danger', 'edit-profile-message-modal');
