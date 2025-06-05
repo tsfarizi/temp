@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     const categoryFilterContainer = document.getElementById('category-filter-container');
     const productListRow = document.getElementById('product-list-row');
     let currentActiveButton = null;
-    const POCKETBASE_URL = 'http://127.0.0.1:8090';
 
     function displayProducts(productsData, filterCategoryApplied = 'all') {
         if (!productListRow) return;
@@ -41,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const productId = this.dataset.productId;
-                addToCart(productId); // Call the addToCart function from cart.js
+                window.addToCart(productId); // Call the addToCart function from cart.js
             });
         });
     }
