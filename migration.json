@@ -1,0 +1,96 @@
+[
+  {
+    "name": "products",
+    "type": "base",
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "category",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "price",
+        "type": "number",
+        "required": true
+      },
+      {
+        "name": "image_url",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": "@guest",
+    "updateRule": "",
+    "deleteRule": ""
+  },
+  {
+    "name": "mountains",
+    "type": "base",
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "skill_level",
+        "type": "select",
+        "required": true,
+        "options": {
+          "values": ["Beginner", "Intermediate", "Advanced"]
+        }
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "image_url",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": "@guest",
+    "updateRule": "",
+    "deleteRule": ""
+  },
+  {
+    "name": "categories",
+    "type": "base",
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "options": {
+          "unique": true
+        }
+      },
+      {
+        "name": "image_url",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": "@guest",
+    "updateRule": "",
+    "deleteRule": ""
+  }
+]
