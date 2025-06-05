@@ -1,0 +1,103 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+main {
+    flex-grow: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+}
+
+.card-img-top {
+    width: 100%;
+    object-fit: cover;
+}
+
+.card {
+    border: 1px solid #e9ecef;
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    transform: translateY(-3px);
+}
+
+.navbar-brand {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #343a40 !important;
+}
+
+.navbar-light .navbar-nav .nav-link.active {
+    color: #007bff;
+    font-weight: 600;
+}
+
+#category-filters.sticky-top {
+    top: 0; /* Adjust if there's a fixed navbar above that's taller */
+    z-index: 1020; /* Default Bootstrap sticky-top z-index */
+    background-color: #f8f9fa !important; /* Ensure bg matches body or is distinct */
+    padding-bottom: 0.5rem !important; /* Reduce padding if it looks too much when sticky */
+}
+
+#category-filter-container .btn-outline-secondary.active {
+    background-color: #6c757d;
+    color: white;
+}
+
+#category-filter-container .btn {
+    font-size: 0.9rem;
+}
+
+footer.bg-dark {
+    background-color: #343a40 !important; /* Ensure Bootstrap class is effective */
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    margin-top: auto; /* Pushes footer to bottom if main content is short */
+}
+
+@media (max-width: 768px) {
+    #hero h1 {
+        font-size: 2.2rem;
+    }
+    #hero .lead {
+        font-size: 0.95rem;
+    }
+    .card-title {
+        font-size: 1.05rem;
+    }
+    h2 {
+        font-size: 1.75rem;
+    }
+    #category-filter-container .btn {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.6rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    #hero h1 {
+        font-size: 1.8rem;
+    }
+    #hero .lead {
+        font-size: 0.9rem;
+    }
+    .card-title {
+        font-size: 1rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
+    /* Bootstrap's mb-4 is 1.5rem, which is usually sufficient. Explicitly setting for .col-sm-6 if needed */
+    /* #product-list-row .col-sm-6 { margin-bottom: 1.5rem !important; } */
+}
