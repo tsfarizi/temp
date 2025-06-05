@@ -1,4 +1,5 @@
 // Initialize cart and senderAddress
+const POCKETBASE_URL = 'http://127.0.0.1:8090';
 let cart = [];
 let senderAddress = {};
 
@@ -29,37 +30,58 @@ function saveCartToLocalStorage() {
 // Load cart data when the script runs
 loadCartFromLocalStorage();
 
-// Function to get product by ID (assuming products array is global from data.js)
-function getProductById(productId) {
-  // Assuming 'products' is a global array from data.js
-  if (typeof products === 'undefined') {
-    console.error('Error: products array is not available. Make sure data.js is loaded before cart.js.');
-    return null;
-  }
-  return products.find(p => p.id === productId);
-}
-
 // Function to add a product to the cart
-function addToCart(productId) {
-  const product = getProductById(productId);
-  if (product) {
-    const existingProductIndex = cart.findIndex(item => item.id === productId);
-    if (existingProductIndex > -1) {
-      // For now, just log. Later we can increment quantity.
-      console.log(`Product "${product.name}" is already in the cart.`);
-      alert(`"${product.name}" is already in your cart.`);
-    } else {
-      cart.push({ ...product, quantity: 1 });
-      saveCartToLocalStorage();
-      console.log(`Product "${product.name}" added to cart.`);
-      alert(`"${product.name}" has been added to your cart!`);
-      if (typeof updateCartLink === 'function') {
-        updateCartLink();
-      }
+async function addToCart(productId) {
+  // Check if user is logged in
+  const token = localStorage.getItem('pocketbase_token');
+  if (!token) {
+    alert("Please log in to add items to your cart.");
+    if (typeof showLoginForm === 'function') { // showLoginForm is in auth.js
+         showLoginForm();
     }
-  } else {
-    console.error(`Product with ID "${productId}" not found.`);
-    alert(`Error: Product not found!`);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${POCKETBASE_URL}/api/collections/products/records/${productId}`);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.error(`Product with ID "${productId}" not found in PocketBase.`);
+        alert(`Error: Product not found!`);
+      } else {
+        console.error(`Error fetching product ${productId} from PocketBase: ${response.status} ${response.statusText}`);
+        alert(`Error fetching product details. Status: ${response.status}`);
+      }
+      return;
+    }
+    const productDataFromPocketBase = await response.json();
+
+    const existingProductIndex = cart.findIndex(item => item.id === productDataFromPocketBase.id);
+    if (existingProductIndex > -1) {
+      cart[existingProductIndex].quantity += 1; // Increment quantity
+      console.log(`Product "${productDataFromPocketBase.name}" quantity updated in the cart.`);
+      alert(`"${productDataFromPocketBase.name}" quantity updated in your cart.`);
+    } else {
+      // Add product with quantity 1
+      cart.push({
+        id: productDataFromPocketBase.id,
+        name: productDataFromPocketBase.name,
+        price: productDataFromPocketBase.price,
+        image_url: productDataFromPocketBase.image_url,
+        quantity: 1
+      });
+      console.log(`Product "${productDataFromPocketBase.name}" added to cart from PocketBase.`);
+      alert(`"${productDataFromPocketBase.name}" has been added to your cart!`);
+    }
+
+    saveCartToLocalStorage();
+    if (typeof updateCartLink === 'function') {
+      updateCartLink();
+    }
+
+  } catch (error) {
+    console.error(`Error in addToCart for product ID "${productId}":`, error);
+    alert(`An unexpected error occurred while adding the product to your cart.`);
   }
 }
 
