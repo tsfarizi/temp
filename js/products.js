@@ -14,15 +14,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         productsData.forEach(product => {
+            let addToCartButtonHTML = '';
+            const token = localStorage.getItem('pocketbase_token');
+            if (token) {
+                addToCartButtonHTML = `<button class="btn btn-primary add-to-cart-btn mt-auto" data-product-id="${product.id}">Add to Cart</button>`;
+            } else {
+                addToCartButtonHTML = ''; // Or a disabled button: <button class="btn btn-secondary mt-auto" disabled title="Please login to add items to cart">Add to Cart</button>
+            }
+
             const productCard = `
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <div class="card h-100">
+                    <div class="card h-100 d-flex flex-column">
                         <img src="${product.image_url}" class="card-img-top" alt="${product.name}" style="height: 180px; object-fit: cover;">
-                        <div class="card-body d-flex flex-column">
+                        <div class="card-body d-flex flex-column flex-grow-1">
                             <h5 class="card-title">${product.name}</h5>
                             <p class="card-text flex-grow-1">${product.description.substring(0, 80)}${product.description.length > 80 ? '...' : ''}</p>
                             <p class="card-text"><strong>Price: Rp ${product.price.toLocaleString('id-ID')}</strong></p>
-                            <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}">Add to Cart</button>
+                            ${addToCartButtonHTML}
                         </div>
                     </div>
                 </div>`;
