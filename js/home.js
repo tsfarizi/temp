@@ -44,11 +44,26 @@ document.addEventListener('DOMContentLoaded', async function() {
                                 <h5 class="card-title">${product.name}</h5>
                                 <p class="card-text flex-grow-1">${product.description.substring(0, 100)}${product.description.length > 100 ? '...' : ''}</p>
                                 <p class="card-text"><strong>Price: Rp ${product.price.toLocaleString('id-ID')}</strong></p>
+                                <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}">Add to Cart</button>
                             </div>
                         </div>
                     </div>`;
             });
             superiorProductsRow.innerHTML = productsHTML;
+
+            // Add event listeners to new "Add to Cart" buttons
+            superiorProductsRow.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    // Assuming addToCart is a global function from cart.js
+                    if (typeof addToCart === 'function') {
+                        addToCart(productId);
+                    } else {
+                        console.error('addToCart function is not defined. Make sure cart.js is loaded.');
+                        alert('Error: Could not add to cart. Functionality missing.');
+                    }
+                });
+            });
         } catch (error) {
             console.error('Failed to load superior products:', error);
             superiorProductsRow.innerHTML = '<p>Failed to load products. Please try again later.</p>';

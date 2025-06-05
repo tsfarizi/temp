@@ -22,10 +22,19 @@ document.addEventListener('DOMContentLoaded', async function() {
                             <h5 class="card-title">${product.name}</h5>
                             <p class="card-text flex-grow-1">${product.description.substring(0, 80)}${product.description.length > 80 ? '...' : ''}</p>
                             <p class="card-text"><strong>Price: Rp ${product.price.toLocaleString('id-ID')}</strong></p>
+                            <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}">Add to Cart</button>
                         </div>
                     </div>
                 </div>`;
             productListRow.innerHTML += productCard;
+        });
+
+        // Add event listeners to "Add to Cart" buttons
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                addToCart(productId); // Call the addToCart function from cart.js
+            });
         });
     }
 

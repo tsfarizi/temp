@@ -246,3 +246,78 @@ main > .alert { /* For messages like "Logout successful" directly in main */
         padding: 20px;
     }
 }
+
+/* === Cart Page Styles === */
+
+/* General spacing for sections on cart.html */
+#cart-items,
+#sender-address,
+#order-summary {
+    margin-bottom: 2rem; /* Add some space below each section */
+}
+
+#cart-items h2,
+#sender-address h2,
+#order-summary h2 {
+    margin-bottom: 1rem; /* Space below section titles */
+    font-weight: 600; /* Slightly bolder titles, common in Poppins */
+}
+
+/* Styling for individual cart items in the list */
+#cart-items-container .list-group-item {
+    padding: 1rem; /* More padding inside each cart item entry */
+}
+
+#cart-items-container .list-group-item img {
+    width: 75px; /* Slightly larger image */
+    height: 75px;
+    object-fit: cover;
+    margin-right: 15px;
+    border-radius: 4px; /* Optional: slightly rounded corners for images */
+}
+
+#cart-items-container .list-group-item h6 {
+    font-weight: 600; /* Bolder product name */
+}
+
+/* Ensure remove button is vertically aligned if text next to it wraps */
+#cart-items-container .list-group-item .remove-from-cart-btn {
+    align-self: center; /* Align button to the center of the flex item space */
+}
+
+/* Sender Address Form */
+#sender-address-form .form-label {
+    font-weight: 500; /* Slightly more emphasis on labels */
+}
+
+/* Order Summary */
+#order-summary-container .list-group-item span:first-child {
+    color: #555; /* Slightly lighter text for labels like 'Subtotal' */
+}
+#order-summary-container .list-group-item strong {
+    font-weight: 600; /* Ensure totals are bold */
+}
+
+#pay-button {
+    font-size: 1.1rem; /* Slightly larger pay button text */
+    padding: 0.75rem 1.5rem; /* More padding for a larger button */
+}
+
+/* === Navigation Cart Badge === */
+#cart-item-count-badge {
+    font-size: 0.75em; /* Adjust badge font size relative to link */
+    padding: 0.3em 0.5em; /* Adjust padding */
+    vertical-align: top; /* Align badge nicely with text */
+    margin-left: 4px; /* Add a little space between "Cart" and badge */
+}
+
+/* If using .bg-primary for badge, and want to ensure it's a specific blue if not default */
+/* .navbar .badge.bg-primary { */
+/*   background-color: #0d6efd !important; /* Bootstrap's default blue */
+/* } */
+
+/* Style for empty cart message */
+#cart-items-container p {
+    font-style: italic;
+    color: #6c757d; /* Bootstrap's secondary text color */
+}
