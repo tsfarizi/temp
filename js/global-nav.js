@@ -1,5 +1,19 @@
 // This function needs to be global to be called from cart.js
 window.updateCartLink = async function() {
+    // Check for user token
+    const userToken = localStorage.getItem('pocketbase_token');
+
+    let cartLink = document.getElementById('cart-nav-link');
+    let cartListItem = cartLink?.closest('.nav-item'); // Get the parent li for removal
+
+    if (!userToken) {
+        // If token doesn't exist and link/badge exists, remove them
+        if (cartListItem) {
+            cartListItem.remove();
+        }
+        return; // Stop further execution
+    }
+
     // Ensure cart.js is loaded and getCartItemCount is available
     if (typeof window.getCartItemCount !== 'function') {
         console.error("getCartItemCount is not available. Ensure cart.js is loaded before global-nav.js.");
@@ -9,7 +23,7 @@ window.updateCartLink = async function() {
     const itemCount = await window.getCartItemCount();
 
     // Attempt to find an existing cart link/badge to update
-    let cartLink = document.getElementById('cart-nav-link');
+    // let cartLink = document.getElementById('cart-nav-link'); // Already defined above
     let cartItemCountBadge = document.getElementById('cart-item-count-badge');
 
     // Find the navbar ul (assuming a common structure or ID)
@@ -21,8 +35,8 @@ window.updateCartLink = async function() {
     }
 
     if (!cartLink) {
-        // If the link doesn't exist, create it
-        const cartListItem = document.createElement('li');
+        // If the link doesn't exist, create it (this will only happen if userToken exists)
+        cartListItem = document.createElement('li'); // cartListItem was defined above, re-assign here
         cartListItem.classList.add('nav-item');
 
         cartLink = document.createElement('a');

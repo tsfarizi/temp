@@ -321,3 +321,42 @@ main > .alert { /* For messages like "Logout successful" directly in main */
     font-style: italic;
     color: #6c757d; /* Bootstrap's secondary text color */
 }
+
+/* === Notification Styles === */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 15px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    z-index: 1050; /* High z-index to appear above most elements */
+    color: #fff; /* Default text color */
+    font-size: 0.95rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    border: 1px solid transparent; /* For border color to be set by specific types */
+    min-width: 250px; /* Minimum width */
+    opacity: 0.95; /* Slight transparency */
+    transition: opacity 0.5s, transform 0.5s; /* For potential future fade/slide effects */
+}
+
+.notification.success {
+    background-color: #28a745; /* Green */
+    border-color: #1e7e34;
+}
+
+.notification.error {
+    background-color: #dc3545; /* Red */
+    border-color: #b02a37;
+}
+
+.notification.info {
+    background-color: #17a2b8; /* Blue/Info */
+    border-color: #117a8b;
+}
+
+/* Example of a closing animation (if a close button is added later) */
+/* .notification.closing {
+    opacity: 0;
+    transform: translateX(-100%);
+} */
