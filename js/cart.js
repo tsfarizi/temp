@@ -1,127 +1,253 @@
-// Initialize cart and senderAddress
-const POCKETBASE_URL = 'http://127.0.0.1:8090';
-let cart = [];
-let senderAddress = {};
+// PocketBase cart logic
 
-// Function to load cart data from local storage
-function loadCartFromLocalStorage() {
-  const storedCart = localStorage.getItem('cart');
-  if (storedCart) {
-    cart = JSON.parse(storedCart);
-    console.log('Cart loaded from local storage:', cart);
-  } else {
-    console.log('No cart data found in local storage.');
-  }
-
-  const storedAddress = localStorage.getItem('senderAddress');
-  senderAddress = storedAddress ? JSON.parse(storedAddress) : {}; // Initialize if null
-  console.log('Sender address loaded from local storage:', senderAddress);
-}
-
-// Function to save cart data to local storage
-function saveCartToLocalStorage() {
-  localStorage.setItem('cart', JSON.stringify(cart));
-  console.log('Cart saved to local storage:', cart);
-
-  localStorage.setItem('senderAddress', JSON.stringify(senderAddress));
-  console.log('Sender address saved to local storage:', senderAddress);
-}
-
-// Load cart data when the script runs
-loadCartFromLocalStorage();
-
-// Function to add a product to the cart
-async function addToCart(productId) {
-  // Check if user is logged in
+window.addToCart = async function(productId) {
   const token = localStorage.getItem('pocketbase_token');
-  if (!token) {
+  const userId = localStorage.getItem('pocketbase_user_id');
+
+  if (!token || !userId) {
     alert("Please log in to add items to your cart.");
-    if (typeof showLoginForm === 'function') { // showLoginForm is in auth.js
-         showLoginForm();
+    if (typeof window.showLoginForm === 'function') {
+         window.showLoginForm();
     }
     return;
   }
 
   try {
-    const response = await fetch(`${POCKETBASE_URL}/api/collections/products/records/${productId}`);
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.error(`Product with ID "${productId}" not found in PocketBase.`);
-        alert(`Error: Product not found!`);
-      } else {
-        console.error(`Error fetching product ${productId} from PocketBase: ${response.status} ${response.statusText}`);
-        alert(`Error fetching product details. Status: ${response.status}`);
-      }
+    const fetchUserResponse = await fetch(`${POCKETBASE_URL}/api/collections/users/records/${userId}?fields=cart`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!fetchUserResponse.ok) {
+        console.error(`Error fetching user cart: ${fetchUserResponse.status} ${fetchUserResponse.statusText}`);
+        alert(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
+        return;
+    }
+
+    const userData = await fetchUserResponse.json();
+    let currentCartIds = userData.cart || [];
+
+    if (currentCartIds.includes(productId)) {
+        alert("Product already in cart.");
+        return;
+    }
+
+    currentCartIds.push(productId);
+
+    const updateUserResponse = await fetch(`${POCKETBASE_URL}/api/collections/users/records/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ cart: currentCartIds })
+    });
+
+    if (!updateUserResponse.ok) {
+      const errorData = await updateUserResponse.json();
+      console.error(`Error updating user cart: ${updateUserResponse.status} ${updateUserResponse.statusText}`, errorData);
+      alert(`Error updating your cart. Status: ${updateUserResponse.status}`);
       return;
     }
-    const productDataFromPocketBase = await response.json();
 
-    const existingProductIndex = cart.findIndex(item => item.id === productDataFromPocketBase.id);
-    if (existingProductIndex > -1) {
-      cart[existingProductIndex].quantity += 1; // Increment quantity
-      console.log(`Product "${productDataFromPocketBase.name}" quantity updated in the cart.`);
-      alert(`"${productDataFromPocketBase.name}" quantity updated in your cart.`);
-    } else {
-      // Add product with quantity 1
-      cart.push({
-        id: productDataFromPocketBase.id,
-        name: productDataFromPocketBase.name,
-        price: productDataFromPocketBase.price,
-        image_url: productDataFromPocketBase.image_url,
-        quantity: 1
-      });
-      console.log(`Product "${productDataFromPocketBase.name}" added to cart from PocketBase.`);
-      alert(`"${productDataFromPocketBase.name}" has been added to your cart!`);
-    }
+    alert("Product added to cart!");
 
-    saveCartToLocalStorage();
-    if (typeof updateCartLink === 'function') {
-      updateCartLink();
+    if (typeof window.updateCartLink === 'function') {
+      window.updateCartLink();
     }
 
   } catch (error) {
     console.error(`Error in addToCart for product ID "${productId}":`, error);
     alert(`An unexpected error occurred while adding the product to your cart.`);
   }
-}
+};
 
-// Function to remove a product from the cart
-function removeFromCart(productId) {
-  const productIndex = cart.findIndex(item => item.id === productId);
-  if (productIndex > -1) {
-    const productName = cart[productIndex].name;
-    cart.splice(productIndex, 1);
-    saveCartToLocalStorage();
-    console.log(`Product "${productName}" removed from cart.`);
-    // alert(`"${productName}" has been removed from your cart.`); // Optional: alert, or rely on UI update
-    if (typeof updateCartLink === 'function') {
-      updateCartLink();
+window.getCartItemCount = async function() {
+  const token = localStorage.getItem('pocketbase_token');
+  const userId = localStorage.getItem('pocketbase_user_id');
+
+  if (!token || !userId) {
+    // console.log("User not logged in, cart count is 0."); // Less noisy
+    return 0;
+  }
+
+  try {
+    const response = await fetch(`${POCKETBASE_URL}/api/collections/users/records/${userId}?fields=cart`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) {
+        console.error(`Error fetching cart count: ${response.status} ${response.statusText}`);
+        return 0;
     }
-  } else {
-    console.warn(`Product with ID "${productId}" not found in cart for removal.`);
+    const userData = await response.json();
+    const currentCartIds = userData.cart || [];
+    return currentCartIds.length;
+  } catch (error) {
+    console.error('Error in getCartItemCount:', error);
+    return 0;
   }
-}
+};
 
-function handlePayment() {
-  // Clear cart
-  cart.length = 0; // Empties the array in place
+window.removeFromCart = async function(productId) {
+  const token = localStorage.getItem('pocketbase_token');
+  const userId = localStorage.getItem('pocketbase_user_id');
 
-  // Clear senderAddress by deleting its properties
-  for (const key in senderAddress) {
-    delete senderAddress[key];
+  if (!token || !userId) {
+    alert("Please log in to modify your cart.");
+    // Optionally call window.showLoginForm() if it exists and makes sense here
+    return;
   }
-  // Alternative: Object.keys(senderAddress).forEach(key => delete senderAddress[key]);
 
-  saveCartToLocalStorage(); // Save the cleared cart and address
+  try {
+    const fetchUserResponse = await fetch(`${POCKETBASE_URL}/api/collections/users/records/${userId}?fields=cart`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
 
-  console.log('Payment successful. Cart and address cleared.');
-  alert('Order successful! Your items will be shipped soon. (This is a temporary message)');
-  if (typeof updateCartLink === 'function') {
-    updateCartLink();
+    if (!fetchUserResponse.ok) {
+        console.error(`Error fetching user cart for removal: ${fetchUserResponse.status} ${fetchUserResponse.statusText}`);
+        alert(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
+        return;
+    }
+
+    const userData = await fetchUserResponse.json();
+    let currentCartIds = userData.cart || [];
+
+    const initialLength = currentCartIds.length;
+    currentCartIds = currentCartIds.filter(id => id !== productId);
+
+    if (currentCartIds.length === initialLength) {
+        console.warn(`Product ID "${productId}" not found in user's cart for removal.`);
+        // alert("Product not found in cart."); // Could be noisy if UI is already updated
+        // Still proceed to update cart link and display, in case of desync.
+    }
+
+    const updateUserResponse = await fetch(`${POCKETBASE_URL}/api/collections/users/records/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ cart: currentCartIds })
+    });
+
+    if (!updateUserResponse.ok) {
+      const errorData = await updateUserResponse.json();
+      console.error(`Error updating user cart after removal: ${updateUserResponse.status} ${updateUserResponse.statusText}`, errorData);
+      alert(`Error updating your cart. Status: ${updateUserResponse.status}`);
+      return;
+    }
+
+    if (currentCartIds.length < initialLength) {
+        alert("Product removed from cart.");
+    }
+
+    if (typeof window.updateCartLink === 'function') {
+      window.updateCartLink();
+    }
+    if (typeof window.displayCart === 'function') { // For cart-page.js to update its display
+      window.displayCart();
+    }
+
+  } catch (error) {
+    console.error(`Error in removeFromCart for product ID "${productId}":`, error);
+    alert(`An unexpected error occurred while removing the product from your cart.`);
   }
-}
+};
 
-// Function to get total quantity of items in cart
-function getCartItemCount() {
-  return cart.reduce((total, item) => total + item.quantity, 0);
-}
+window.getCartContents = async function() {
+  const token = localStorage.getItem('pocketbase_token');
+  const userId = localStorage.getItem('pocketbase_user_id');
+
+  if (!token || !userId) {
+    alert("Please log in to view your cart contents.");
+    // Optionally call window.showLoginForm()
+    return [];
+  }
+
+  try {
+    const fetchUserResponse = await fetch(`${POCKETBASE_URL}/api/collections/users/records/${userId}?fields=cart`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!fetchUserResponse.ok) {
+        console.error(`Error fetching user cart for contents: ${fetchUserResponse.status} ${fetchUserResponse.statusText}`);
+        alert(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
+        return [];
+    }
+
+    const userData = await fetchUserResponse.json();
+    const productIds = userData.cart || [];
+
+    if (productIds.length === 0) {
+      return [];
+    }
+
+    // Construct filter string: (id='id1' || id='id2' || ...)
+    const filter = productIds.map(id => `id='${id}'`).join(' || ');
+
+    const productsResponse = await fetch(`${POCKETBASE_URL}/api/collections/products/records?filter=(${filter})`, {
+        headers: { 'Authorization': `Bearer ${token}` } // Assuming products might be protected or for consistency
+    });
+
+    if (!productsResponse.ok) {
+        console.error(`Error fetching product details: ${productsResponse.status} ${productsResponse.statusText}`);
+        alert('Error fetching product details for your cart.');
+        return [];
+    }
+
+    const productsData = await productsResponse.json();
+    return productsData.items || [];
+
+  } catch (error) {
+    console.error('Error in getCartContents:', error);
+    alert('An unexpected error occurred while fetching cart contents.');
+    return [];
+  }
+};
+
+window.handlePayment = async function() {
+  const token = localStorage.getItem('pocketbase_token');
+  const userId = localStorage.getItem('pocketbase_user_id');
+
+  if (!token || !userId) {
+    alert("Please log in to proceed with payment.");
+    // Optionally call window.showLoginForm()
+    return;
+  }
+
+  try {
+    const updateUserResponse = await fetch(`${POCKETBASE_URL}/api/collections/users/records/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ cart: [] }) // Clear the cart
+    });
+
+    if (!updateUserResponse.ok) {
+      const errorData = await updateUserResponse.json();
+      console.error(`Error clearing user cart during payment: ${updateUserResponse.status} ${updateUserResponse.statusText}`, errorData);
+      alert(`Error clearing cart. Status: ${updateUserResponse.status}`);
+      return;
+    }
+
+    alert("Checkout step 1 complete: Cart cleared. Next: Address."); // Temporary message
+
+    if (typeof window.updateCartLink === 'function') {
+      window.updateCartLink();
+    }
+    if (typeof window.displayCart === 'function') { // For cart-page.js to update its display
+      window.displayCart();
+    }
+
+  } catch (error) {
+    console.error('Error in handlePayment:', error);
+    alert('An unexpected error occurred during the payment process.');
+  }
+};
+
+// Note: senderAddress logic has been removed as it was tied to local storage.
+// This will need to be re-evaluated if sender address needs to be stored in PocketBase or handled differently.
+// cart-page.js will need significant rework to use getCartContents and display product details.
+// The new window.displayCart() function will be crucial for cart-page.js to call after modifications.
+// global-nav.js's updateCartLink will use the updated getCartItemCount.

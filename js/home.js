@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const superiorProductsRow = document.getElementById('superior-products-row');
     const mountainRecommendationsRow = document.getElementById('mountain-recommendations-row');
-    const POCKETBASE_URL = 'http://127.0.0.1:8090';
 
     function getRandomElements(array, numElements) {
         if (!array || array.length === 0) return [];
@@ -64,11 +63,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 button.addEventListener('click', function() {
                     const productId = this.dataset.productId;
                     // Assuming addToCart is a global function from cart.js
-                    if (typeof addToCart === 'function') {
-                        addToCart(productId);
-                    } else {
-                        console.error('addToCart function is not defined. Make sure cart.js is loaded.');
-                        alert('Error: Could not add to cart. Functionality missing.');
+                    if (typeof window.addToCart === 'function') {
+                        window.addToCart(productId);
                     }
                 });
             });

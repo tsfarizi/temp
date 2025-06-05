@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    const POCKETBASE_URL = 'http://127.0.0.1:8090';
     const MIGRATION_FLAG = 'isDataMigrated_v1';
 
     async function migrateData() {

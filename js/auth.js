@@ -1,4 +1,3 @@
-const POCKETBASE_URL = 'http://127.0.0.1:8090';
 
 let authUserModalElement;
 let authUserModal;
@@ -207,6 +206,16 @@ function showLoginForm() {
 
                     updateNavbar();
                     authUserModal.hide();
+                    // Refresh cart link in navbar
+                    if (typeof window.updateCartLink === 'function') {
+                        window.updateCartLink();
+                    } else {
+                        console.warn('updateCartLink function not found after login.');
+                    }
+                    // If on cart page, refresh its display
+                    if (typeof window.displayCart === 'function' && window.location.pathname.includes('cart.html')) {
+                        window.displayCart();
+                    }
                 } else {
                     displayMessageInModal(data.message || 'Login failed. Check credentials.', 'danger', 'login-message-modal');
                 }
@@ -450,6 +459,17 @@ document.addEventListener('DOMContentLoaded', () => {
             currentUserDataForEdit = null; // Clear cached user data
             updateNavbar();
             if (authUserModal && authUserModal._isShown) authUserModal.hide();
+
+            // Refresh cart link in navbar
+            if (typeof window.updateCartLink === 'function') {
+                window.updateCartLink();
+            } else {
+                console.warn('updateCartLink function not found after logout.');
+            }
+            // If on cart page, refresh its display to show logged-out state (empty)
+            if (typeof window.displayCart === 'function' && window.location.pathname.includes('cart.html')) {
+                window.displayCart();
+            }
 
             const mainElement = document.querySelector('main');
             if(mainElement){

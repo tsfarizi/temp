@@ -1,12 +1,12 @@
 // This function needs to be global to be called from cart.js
-function updateCartLink() {
+window.updateCartLink = async function() {
     // Ensure cart.js is loaded and getCartItemCount is available
-    if (typeof getCartItemCount !== 'function') {
+    if (typeof window.getCartItemCount !== 'function') {
         console.error("getCartItemCount is not available. Ensure cart.js is loaded before global-nav.js.");
         return;
     }
 
-    const itemCount = getCartItemCount();
+    const itemCount = await window.getCartItemCount();
 
     // Attempt to find an existing cart link/badge to update
     let cartLink = document.getElementById('cart-nav-link');
@@ -62,24 +62,5 @@ function updateCartLink() {
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initial update on page load
-    // Ensure cart data is loaded before this first update.
-    // cart.js calls loadCartFromLocalStorage() at its end.
-    // So, by the time DOMContentLoaded fires for global-nav.js (if loaded after cart.js),
-    // cart data should be ready.
-    if (typeof loadCartFromLocalStorage === 'function' && typeof cart !== 'undefined' && typeof getCartItemCount === 'function') {
-         // loadCartFromLocalStorage(); // Already called by cart.js itself
-         updateCartLink();
-    } else {
-        // Fallback: if cart.js hasn't loaded its stuff yet, try a small delay.
-        // This is a bit of a hack; script load order is key.
-        // Also, check if getCartItemCount is defined before calling updateCartLink.
-        console.warn("Cart data or getCartItemCount might not be ready yet for initial cart link update. Retrying shortly.");
-        setTimeout(function() {
-            if (typeof getCartItemCount === 'function') {
-                updateCartLink();
-            } else {
-                console.error("getCartItemCount still not available after delay. Cart link may not be accurate.");
-            }
-        }, 100);
-    }
+    window.updateCartLink();
 });
