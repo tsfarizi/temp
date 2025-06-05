@@ -284,6 +284,7 @@ async function showUserProfile() {
                     <p><strong>Username:</strong> ${currentUserDataForEdit.username || 'N/A'}</p>
                     <p><strong>Name:</strong> ${currentUserDataForEdit.name || 'N/A'}</p>
                     <p><strong>Verified:</strong> ${currentUserDataForEdit.verified ? 'Yes' : 'No'}</p>
+                    <p><strong>Address:</strong> ${currentUserDataForEdit.address || 'Not set'}</p>
                     <p><strong>Created:</strong> ${new Date(currentUserDataForEdit.created).toLocaleString()}</p>
                     <p><strong>Updated:</strong> ${new Date(currentUserDataForEdit.updated).toLocaleString()}</p>
                 </div>
@@ -333,6 +334,10 @@ function showEditProfileForm(userData) {
                 <label for="edit-email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="edit-email" value="${userData.email || ''}" required>
             </div>
+            <div class="mb-3">
+                <label for="edit-address" class="form-label">Address</label>
+                <textarea class="form-control" id="edit-address" rows="3">${userData.address || ''}</textarea>
+            </div>
             <!-- Username editing can be added if PocketBase schema allows and it's desired -->
             <!-- <div class="mb-3">
                 <label for="edit-username" class="form-label">Username</label>
@@ -355,6 +360,7 @@ function showEditProfileForm(userData) {
     document.getElementById('save-profile-changes')?.addEventListener('click', async () => {
         const newName = document.getElementById('edit-name').value;
         const newEmail = document.getElementById('edit-email').value;
+        const newAddress = document.getElementById('edit-address').value;
         // const newUsername = document.getElementById('edit-username')?.value;
 
         if (!newName.trim()) {
@@ -370,11 +376,16 @@ function showEditProfileForm(userData) {
         const updatedData = {};
         if (newName !== userData.name) updatedData.name = newName;
         if (newEmail !== userData.email) updatedData.email = newEmail;
+        // PocketBase handles empty string for address as unsetting it or setting to empty.
+        // Compare with (userData.address || '') to correctly detect change from null/undefined to empty string.
+        if (newAddress !== (userData.address || '')) {
+            updatedData.address = newAddress;
+        }
         // if (newUsername && newUsername !== userData.username) updatedData.username = newUsername;
 
 
         if (Object.keys(updatedData).length === 0) {
-            displayMessageInModal('No changes detected.', 'info', 'edit-profile-message-modal');
+            displayMessageInModal('No changes detected to save.', 'info', 'edit-profile-message-modal');
             return;
         }
 
@@ -470,15 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof window.displayCart === 'function' && window.location.pathname.includes('cart.html')) {
                 window.displayCart();
             }
-
-            const mainElement = document.querySelector('main');
-            if(mainElement){
-                const logoutMsg = document.createElement('div');
-                logoutMsg.className = 'alert alert-info container mt-3';
-                logoutMsg.textContent = 'You have been logged out successfully.';
-                mainElement.insertBefore(logoutMsg, mainElement.firstChild);
-                setTimeout(() => logoutMsg.remove(), 3000);
-            }
+            showSuccessNotification('You have been logged out successfully.');
         });
     }
 
