@@ -5,7 +5,7 @@ window.addToCart = async function(productId) {
   const userId = localStorage.getItem('pocketbase_user_id');
 
   if (!token || !userId) {
-    alert("Please log in to add items to your cart.");
+    showInfoNotification("Please log in to add items to your cart.");
     if (typeof window.showLoginForm === 'function') {
          window.showLoginForm();
     }
@@ -19,7 +19,7 @@ window.addToCart = async function(productId) {
 
     if (!fetchUserResponse.ok) {
         console.error(`Error fetching user cart: ${fetchUserResponse.status} ${fetchUserResponse.statusText}`);
-        alert(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
+        showErrorNotification(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
         return;
     }
 
@@ -27,7 +27,7 @@ window.addToCart = async function(productId) {
     let currentCartIds = userData.cart || [];
 
     if (currentCartIds.includes(productId)) {
-        alert("Product already in cart.");
+        showInfoNotification("Product already in cart.");
         return;
     }
 
@@ -45,11 +45,11 @@ window.addToCart = async function(productId) {
     if (!updateUserResponse.ok) {
       const errorData = await updateUserResponse.json();
       console.error(`Error updating user cart: ${updateUserResponse.status} ${updateUserResponse.statusText}`, errorData);
-      alert(`Error updating your cart. Status: ${updateUserResponse.status}`);
+      showErrorNotification(`Error updating your cart. Status: ${updateUserResponse.status}`);
       return;
     }
 
-    alert("Product added to cart!");
+    showSuccessNotification("Product added to cart!");
 
     if (typeof window.updateCartLink === 'function') {
       window.updateCartLink();
@@ -57,7 +57,7 @@ window.addToCart = async function(productId) {
 
   } catch (error) {
     console.error(`Error in addToCart for product ID "${productId}":`, error);
-    alert(`An unexpected error occurred while adding the product to your cart.`);
+    showErrorNotification(`An unexpected error occurred while adding the product to your cart.`);
   }
 };
 
@@ -92,7 +92,7 @@ window.removeFromCart = async function(productId) {
   const userId = localStorage.getItem('pocketbase_user_id');
 
   if (!token || !userId) {
-    alert("Please log in to modify your cart.");
+    showInfoNotification("Please log in to modify your cart.");
     // Optionally call window.showLoginForm() if it exists and makes sense here
     return;
   }
@@ -104,7 +104,7 @@ window.removeFromCart = async function(productId) {
 
     if (!fetchUserResponse.ok) {
         console.error(`Error fetching user cart for removal: ${fetchUserResponse.status} ${fetchUserResponse.statusText}`);
-        alert(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
+        showErrorNotification(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
         return;
     }
 
@@ -132,12 +132,12 @@ window.removeFromCart = async function(productId) {
     if (!updateUserResponse.ok) {
       const errorData = await updateUserResponse.json();
       console.error(`Error updating user cart after removal: ${updateUserResponse.status} ${updateUserResponse.statusText}`, errorData);
-      alert(`Error updating your cart. Status: ${updateUserResponse.status}`);
+      showErrorNotification(`Error updating your cart. Status: ${updateUserResponse.status}`);
       return;
     }
 
     if (currentCartIds.length < initialLength) {
-        alert("Product removed from cart.");
+        showSuccessNotification("Product removed from cart.");
     }
 
     if (typeof window.updateCartLink === 'function') {
@@ -149,7 +149,7 @@ window.removeFromCart = async function(productId) {
 
   } catch (error) {
     console.error(`Error in removeFromCart for product ID "${productId}":`, error);
-    alert(`An unexpected error occurred while removing the product from your cart.`);
+    showErrorNotification(`An unexpected error occurred while removing the product from your cart.`);
   }
 };
 
@@ -158,7 +158,7 @@ window.getCartContents = async function() {
   const userId = localStorage.getItem('pocketbase_user_id');
 
   if (!token || !userId) {
-    alert("Please log in to view your cart contents.");
+    showInfoNotification("Please log in to view your cart contents.");
     // Optionally call window.showLoginForm()
     return [];
   }
@@ -170,7 +170,7 @@ window.getCartContents = async function() {
 
     if (!fetchUserResponse.ok) {
         console.error(`Error fetching user cart for contents: ${fetchUserResponse.status} ${fetchUserResponse.statusText}`);
-        alert(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
+        showErrorNotification(`Error fetching your cart details. Status: ${fetchUserResponse.status}`);
         return [];
     }
 
@@ -190,7 +190,7 @@ window.getCartContents = async function() {
 
     if (!productsResponse.ok) {
         console.error(`Error fetching product details: ${productsResponse.status} ${productsResponse.statusText}`);
-        alert('Error fetching product details for your cart.');
+        showErrorNotification('Error fetching product details for your cart.');
         return [];
     }
 
@@ -199,7 +199,7 @@ window.getCartContents = async function() {
 
   } catch (error) {
     console.error('Error in getCartContents:', error);
-    alert('An unexpected error occurred while fetching cart contents.');
+    showErrorNotification('An unexpected error occurred while fetching cart contents.');
     return [];
   }
 };
@@ -209,7 +209,7 @@ window.handlePayment = async function() {
   const userId = localStorage.getItem('pocketbase_user_id');
 
   if (!token || !userId) {
-    alert("Please log in to proceed with payment.");
+    showInfoNotification("Please log in to proceed with payment.");
     // Optionally call window.showLoginForm()
     return;
   }
@@ -227,11 +227,11 @@ window.handlePayment = async function() {
     if (!updateUserResponse.ok) {
       const errorData = await updateUserResponse.json();
       console.error(`Error clearing user cart during payment: ${updateUserResponse.status} ${updateUserResponse.statusText}`, errorData);
-      alert(`Error clearing cart. Status: ${updateUserResponse.status}`);
+      showErrorNotification(`Error clearing cart. Status: ${updateUserResponse.status}`);
       return;
     }
 
-    alert("Checkout step 1 complete: Cart cleared. Next: Address."); // Temporary message
+    showSuccessNotification("Cart cleared successfully. Proceeding to address details.");
 
     if (typeof window.updateCartLink === 'function') {
       window.updateCartLink();
@@ -242,7 +242,7 @@ window.handlePayment = async function() {
 
   } catch (error) {
     console.error('Error in handlePayment:', error);
-    alert('An unexpected error occurred during the payment process.');
+    showErrorNotification('An unexpected error occurred during the payment process.');
   }
 };
 

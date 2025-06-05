@@ -1,4 +1,37 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // --- BEGIN AUTHENTICATION CHECK ---
+    const userToken = localStorage.getItem('pocketbase_token');
+    const mainContent = document.querySelector('main'); // Assuming your main content area is within a <main> tag
+
+    if (!userToken) {
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div class="container mt-5">
+                    <div class="alert alert-warning" role="alert">
+                        You need to be logged in to view your cart. Please
+                        <a href="#" id="login-from-cart" class="alert-link">login</a>.
+                    </div>
+                </div>
+            `;
+            const loginLink = document.getElementById('login-from-cart');
+            if (loginLink) {
+                loginLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    if (typeof window.showLoginForm === 'function') {
+                        window.showLoginForm();
+                    } else {
+                        console.error('showLoginForm function is not available.');
+                        showErrorNotification('Login functionality is currently unavailable.');
+                    }
+                });
+            }
+        } else {
+            console.error('Main content container not found for displaying login message.');
+        }
+        return; // Prevent further execution of cart display logic
+    }
+    // --- END AUTHENTICATION CHECK ---
+
     const cartItemsContainer = document.getElementById('cart-items-container');
     const orderSummaryContainer = document.getElementById('order-summary-container');
     const payButton = document.getElementById('pay-button');
@@ -65,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     await window.removeFromCart(productId);
                 } else {
                     console.error('removeFromCart function is not defined.');
-                    alert('Error: Could not remove item. Functionality missing.');
+                    showErrorNotification('Error: Could not remove item. Functionality missing.');
                 }
             }
         });
@@ -141,14 +174,14 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('save-address-btn').addEventListener('click', async function() {
                 const newAddressValue = document.getElementById('user-address-input').value.trim();
                 if (!newAddressValue) {
-                    alert("Address cannot be empty.");
+                    showErrorNotification("Address cannot be empty.");
                     return;
                 }
 
                 const userId = localStorage.getItem('pocketbase_user_id');
                 const token = localStorage.getItem('pocketbase_token');
                 if (!userId || !token) {
-                    alert('Authentication error. Please log in again.');
+                    showErrorNotification('Authentication error. Please log in again.');
                     return;
                 }
 
@@ -167,13 +200,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         throw new Error(errorData.message || 'Failed to save address.');
                     }
 
-                    alert("Order complete! Address saved.");
+                    showSuccessNotification("Order complete! Address saved.");
 
                     if (typeof window.handlePayment === 'function') {
                         await window.handlePayment(); // Clears cart in PB
                     } else {
                         console.error('handlePayment function not found on window object');
-                        alert('Critical error: Payment handling function missing.');
+                        showErrorNotification('Critical error: Payment handling function missing.');
                     }
 
                     // UI update after successful order
@@ -195,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 } catch (error) {
                     console.error('Error saving address or completing order:', error);
-                    alert(`Error: ${error.message}`);
+                    showErrorNotification(`Error: ${error.message}`);
                 }
             });
         }
@@ -210,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('pocketbase_token');
 
             if (!userId || !token) {
-                alert('Please log in to proceed.');
+                showInfoNotification('Please log in to proceed.');
                 if (typeof window.showLoginForm === 'function') {
                     window.showLoginForm();
                 }
@@ -233,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             } catch (error) {
               console.error('Error fetching user address:', error);
-              alert(`Could not fetch user address: ${error.message}`);
+              showErrorNotification(`Could not fetch user address: ${error.message}`);
             }
         });
     }
