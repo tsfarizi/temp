@@ -48,18 +48,18 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Cart items container not found');
             return;
         }
-        cartItemsContainer.innerHTML = '<p>Memuat keranjang...</p>';
+        cartItemsContainer.innerHTML = '<p>Loading cart...</p>';
 
         try {
             const items = await window.getCartContents();
 
             if (!items) {
-                cartItemsContainer.innerHTML = '<p class="text-danger">Gagal memuat isi keranjang. Silakan coba lagi nanti.</p>';
+                cartItemsContainer.innerHTML = '<p class="text-danger">Error loading cart contents. Please try again later.</p>';
                 return;
             }
 
             if (items.length === 0) {
-                cartItemsContainer.innerHTML = '<p>Keranjang Anda kosong.</p>';
+                cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
                 return;
             }
 
@@ -75,10 +75,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <img src="${item.image_url}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
                         <div>
                             <h6 class="my-0">${item.name}</h6>
-                            <small class="text-muted">Harga: Rp ${item.price.toLocaleString('id-ID')}</small>
+                            <small class="text-muted">Price: Rp ${item.price.toLocaleString('id-ID')}</small>
                         </div>
                     </div>
-                    <button class="btn btn-danger btn-sm remove-from-cart-btn" data-product-id="${item.id}">Hapus</button>
+                    <button class="btn btn-danger btn-sm remove-from-cart-btn" data-product-id="${item.id}">Remove</button>
                 `;
                 ul.appendChild(li);
             });
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Error in displayCartItems:', error);
-            cartItemsContainer.innerHTML = '<p class="text-danger">Tidak dapat menampilkan item keranjang.</p>';
+            cartItemsContainer.innerHTML = '<p class="text-danger">Could not display cart items.</p>';
         }
     }
 
@@ -109,12 +109,12 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Order summary container not found');
             return;
         }
-        orderSummaryContainer.innerHTML = '<p>Menghitung ringkasan...</p>';
+        orderSummaryContainer.innerHTML = '<p>Calculating summary...</p>';
 
         try {
             const items = await window.getCartContents();
             if (!items) {
-                 orderSummaryContainer.innerHTML = '<p class="text-danger">Tidak dapat menghitung ringkasan pesanan.</p>';
+                 orderSummaryContainer.innerHTML = '<p class="text-danger">Could not calculate order summary.</p>';
                 return;
             }
 
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <strong>Rp ${subtotal.toLocaleString('id-ID')}</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
-                        <span>Pengiriman</span>
+                        <span>Shipping</span>
                         <strong>Rp ${shippingCost.toLocaleString('id-ID')}</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         } catch (error) {
             console.error('Error in displayOrderSummary:', error);
-            orderSummaryContainer.innerHTML = '<p class="text-danger">Tidak dapat menampilkan ringkasan pesanan.</p>';
+            orderSummaryContainer.innerHTML = '<p class="text-danger">Could not display order summary.</p>';
         }
     }
 
@@ -160,13 +160,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if(senderAddressSection) {
             senderAddressSection.style.display = 'block'; // Show the section
             senderAddressSection.innerHTML = `
-                <h4>Pengiriman Address</h4>
+                <h4>Shipping Address</h4>
                 <div class="mb-3">
-                    <label for="user-address-input" class="form-label">Alamat Anda:</label>
-                    <textarea id="user-address-input" class="form-control" rows="3" placeholder="Masukkan alamat pengiriman Anda">${currentAddress}</textarea>
+                    <label for="user-address-input" class="form-label">Your Address:</label>
+                    <textarea id="user-address-input" class="form-control" rows="3" placeholder="Enter your shipping address">${currentAddress}</textarea>
                 </div>
-                <button id="save-address-btn" class="btn btn-primary mt-2">Simpan Alamat & Selesaikan Pesanan</button>
-                <button id="back-to-cart-view-from-address" class="btn btn-secondary mt-2">Kembali ke Keranjang</button>
+                <button id="save-address-btn" class="btn btn-primary mt-2">Save Address & Complete Order</button>
+                <button id="back-to-cart-view-from-address" class="btn btn-secondary mt-2">Back to Cart</button>
             `;
 
             document.getElementById('back-to-cart-view-from-address').addEventListener('click', showCartView);
@@ -174,14 +174,14 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('save-address-btn').addEventListener('click', async function() {
                 const newAddressValue = document.getElementById('user-address-input').value.trim();
                 if (!newAddressValue) {
-                    showErrorNotification("Alamat tidak boleh kosong.");
+                    showErrorNotification("Address cannot be empty.");
                     return;
                 }
 
                 const userId = localStorage.getItem('pocketbase_user_id');
                 const token = localStorage.getItem('pocketbase_token');
                 if (!userId || !token) {
-                    showErrorNotification('Kesalahan autentikasi. Silakan masuk lagi.');
+                    showErrorNotification('Authentication error. Please log in again.');
                     return;
                 }
 
@@ -197,10 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (!response.ok) {
                         const errorData = await response.json();
-                        throw new Error(errorData.message || 'Gagal menyimpan alamat.');
+                        throw new Error(errorData.message || 'Failed to save address.');
                     }
 
-                    showSuccessNotification("Pesanan selesai! Alamat disimpan.");
+                    showSuccessNotification("Order complete! Address saved.");
 
                     if (typeof window.handlePayment === 'function') {
                         await window.handlePayment(); // Clears cart in PB
@@ -213,9 +213,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if(senderAddressSection) {
                         senderAddressSection.innerHTML = `
                             <div class="alert alert-success" role="alert">
-                                Pesanan berhasil dibuat! Alamat Anda telah disimpan.
+                                Order placed successfully! Your address has been saved.
                             </div>
-                            <button id="view-cart-after-order" class="btn btn-info">Lihat Keranjang</button>
+                            <button id="view-cart-after-order" class="btn btn-info">View Cart</button>
                         `;
                         document.getElementById('view-cart-after-order')?.addEventListener('click', () => {
                             showCartView();
@@ -236,14 +236,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     if (payButton) {
-        payButton.textContent = 'Lanjutkan ke Checkout';
+        payButton.textContent = 'Proceed to Checkout';
         payButton.addEventListener('click', async function() {
             console.log('Proceed to Checkout clicked. Fetching user address...');
             const userId = localStorage.getItem('pocketbase_user_id');
             const token = localStorage.getItem('pocketbase_token');
 
             if (!userId || !token) {
-                showInfoNotification('Silakan masuk untuk melanjutkan.');
+                showInfoNotification('Please log in to proceed.');
                 if (typeof window.showLoginForm === 'function') {
                     window.showLoginForm();
                 }
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
               if (!response.ok) {
                   let errorDetails = response.statusText;
                   try { const pbError = await response.json(); errorDetails = pbError.message || JSON.stringify(pbError.data) || errorDetails; } catch (e) {}
-                  throw new Error(`Gagal mengambil alamat. Status: ${response.status}. Details: ${errorDetails}`);
+                  throw new Error(`Failed to fetch address. Status: ${response.status}. Details: ${errorDetails}`);
               }
               const userData = await response.json();
               const currentAddress = userData.address || '';
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             } catch (error) {
               console.error('Error fetching user address:', error);
-              showErrorNotification(`Tidak dapat mengambil alamat pengguna: ${error.message}`);
+              showErrorNotification(`Could not fetch user address: ${error.message}`);
             }
         });
     }
