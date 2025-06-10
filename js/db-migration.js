@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    const MIGRATION_FLAG = 'isDataMigrated_v1';
+    const MIGRATION_FLAG = 'isDataMigrated_v2';
 
     async function migrateData() {
         if (localStorage.getItem(MIGRATION_FLAG)) {

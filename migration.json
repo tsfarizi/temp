@@ -27,6 +27,14 @@
         "name": "description",
         "type": "text",
         "required": true
+      },
+      {
+        "name": "gender",
+        "type": "select",
+        "required": false,
+        "options": {
+          "values": ["pria", "wanita"]
+        }
       }
     ],
     "listRule": "",
