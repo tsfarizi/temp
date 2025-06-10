@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             }
 
-            // localStorage.setItem(MIGRATION_FLAG, 'true');
             console.log('Data migration to PocketBase completed successfully.');
+            localStorage.setItem(MIGRATION_FLAG, 'true');
         } catch (error) {
             console.error('An error occurred during data migration:', error);
         }
