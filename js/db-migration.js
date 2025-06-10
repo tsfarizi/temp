@@ -2,10 +2,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     const MIGRATION_FLAG = 'isDataMigrated_v1';
 
     async function migrateData() {
-        // if (localStorage.getItem(MIGRATION_FLAG)) {
-        //     console.log('Data migration already performed. Skipping.');
-        //     return;
-        // }
+        if (localStorage.getItem(MIGRATION_FLAG)) {
+            console.log('Data migration already performed. Skipping.');
+            return;
+        }
 
         console.log('Starting data migration to PocketBase...');
 
