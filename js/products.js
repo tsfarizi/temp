@@ -121,6 +121,18 @@ document.addEventListener('DOMContentLoaded', async function() {
                 this.classList.add('active');
                 currentActiveCategoryButton = this;
                 currentCategory = this.dataset.category; // Update currentCategory
+                // Show/hide gender filter
+                if (this.dataset.category === 'all') {
+                    genderFilterContainer.style.display = 'flex';
+                } else {
+                    genderFilterContainer.style.display = 'none';
+                    // Reset gender filter to 'all'
+                    const genderSelect = document.getElementById('gender-select');
+                    if (genderSelect) {
+                        genderSelect.value = 'all';
+                    }
+                    currentGender = 'all';
+                }
                 await fetchAndDisplayProducts(currentCategory, currentGender); // Modified call
             });
             categoryFilterContainer.appendChild(allButton);
@@ -147,6 +159,18 @@ document.addEventListener('DOMContentLoaded', async function() {
                         this.classList.add('active');
                         currentActiveCategoryButton = this;
                         currentCategory = this.dataset.category; // Update currentCategory
+                        // Show/hide gender filter
+                        if (this.dataset.category === 'all') {
+                            genderFilterContainer.style.display = 'flex';
+                        } else {
+                            genderFilterContainer.style.display = 'none';
+                            // Reset gender filter to 'all'
+                            const genderSelect = document.getElementById('gender-select');
+                            if (genderSelect) {
+                                genderSelect.value = 'all';
+                            }
+                            currentGender = 'all';
+                        }
                         await fetchAndDisplayProducts(currentCategory, currentGender); // Modified call
                     });
                     categoryFilterContainer.appendChild(button);
