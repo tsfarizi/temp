@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    const MIGRATION_FLAG = 'isDataMigrated_v2';
+    const MIGRATION_FLAG = 'isDataMigrated_v3';
 
     async function migrateData() {
         if (localStorage.getItem(MIGRATION_FLAG)) {
@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log('Migrating products...');
             for (const product of products) {
                 const { id, ...cleanProduct } = product;
+                console.log('Attempting to migrate product:', JSON.stringify(cleanProduct, null, 2)); // Added log
                 const response = await fetch(`${POCKETBASE_URL}/api/collections/products/records`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -25,10 +26,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
+                    const errorData = await response.json(); // This is already good
                     console.error(`Failed to migrate product ${product.name}: ${response.status}`, errorData);
                 } else {
-                    console.log(`Migrated product: ${product.name}`);
+                    const responseData = await response.json(); // Get response data for logging
+                    console.log(`Successfully migrated product: ${product.name}`, responseData); // Added response data to log
                 }
             }
 

@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         let filterString = "";
         if (filterParts.length > 0) {
-            filterString = `&filter=(${filterParts.join(' && ')})`;
+            filterString = `&filter=(${filterParts.join('&&')})`;
         }
 
         let url = `${POCKETBASE_URL}/api/collections/products/records?perPage=100${filterString}`;
