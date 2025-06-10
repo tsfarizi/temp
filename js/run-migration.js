@@ -1,0 +1,157 @@
+// run-migration.js
+const fetch = require('node-fetch');
+const POCKETBASE_URL = 'http://127.0.0.1:8090';
+
+// Data from js/data.js
+const products = [
+  // Existing products with gender modifications
+  { id: 'p1', name: 'Head-Lamp-XXX', category: 'lainnya', price: 389850, image_url: 'assets/produk/lainnya/Head-Lamp-XXX.jpg', description: 'Reliable headlamp for all your adventures.' },
+  { id: 'p2', name: 'Head-Lamp', category: 'lainnya', price: 299850, image_url: 'assets/produk/lainnya/Head-Lamp.jpg', description: 'A trusty companion for dark trails.' },
+  { id: 'p3', name: 'Kompor-Camping', category: 'lainnya', price: 682500, image_url: 'assets/produk/lainnya/Kompor-Camping.jpg', description: 'Compact and efficient camping stove.' },
+  { id: 'p4', name: 'Kompor-Portable', category: 'lainnya', price: 525000, image_url: 'assets/produk/lainnya/Kompor-Portable.jpg', description: 'Lightweight stove for quick meals.' },
+  { id: 'p5', name: 'Lampu-Tenda', category: 'lainnya', price: 236250, image_url: 'assets/produk/lainnya/Lampu-Tenda.jpg', description: 'Brightens up your tent at night.' },
+  { id: 'p6', name: 'Lensatic-Compas', category: 'lainnya', price: 330000, image_url: 'assets/produk/lainnya/Lensatic-Compas.jpg', description: 'Essential for navigation.' },
+  { id: 'p7', name: 'Pisau-lipat-XYZ', category: 'lainnya', price: 284850, image_url: 'assets/produk/lainnya/Pisau-lipat-XYZ.jpg', description: 'Versatile folding knife.' },
+  { id: 'p8', name: 'Sendok-Garpu', category: 'lainnya', price: 150000, image_url: 'assets/produk/lainnya/Sendok-Garpu.jpg', description: 'Durable utensil set.' },
+  { id: 'p9', name: 'Tongkat-Gunung', category: 'lainnya', price: 449850, image_url: 'assets/produk/lainnya/Tongkat-Gunung.jpg', description: 'Provides stability on uneven terrain.' },
+  { id: 'p10', name: 'Jaket-Adventure', category: 'pakaian', price: 1349850, image_url: 'assets/produk/pakaian/Jaket-Adventure.jpg', description: 'Weather-resistant adventure jacket.', gender: 'pria' },
+  { id: 'p11', name: 'Jaket-Avtech', category: 'pakaian', price: 1125000, image_url: 'assets/produk/pakaian/Jaket-Avtech.jpg', description: 'Comfortable and stylish outdoor jacket.', gender: 'pria' },
+  { id: 'p12', name: 'Jaket-Gunung', category: 'pakaian', price: 1492500, image_url: 'assets/produk/pakaian/Jaket-Gunung.jpg', description: 'Insulated jacket for mountain expeditions.', gender: 'pria' },
+  { id: 'p13', name: 'Jaket-JACKWOLFS', category: 'pakaian', price: 1800000, image_url: 'assets/produk/pakaian/Jaket-JACKWOLFS.jpg', description: 'High-performance Jack Wolfskin jacket.', gender: 'pria' },
+  { id: 'p14', name: 'Jaket-Wolfskin', category: 'pakaian', price: 1650000, image_url: 'assets/produk/pakaian/Jaket-Wolfskin.jpg', description: 'Durable Wolfskin outdoor jacket.', gender: 'pria' },
+  { id: 'p15', name: 'Adidas-Neo-AX2', category: 'sepatu', price: 2250000, image_url: 'assets/produk/sepatu/Adidas-Neo-AX2.jpg', description: 'Comfortable Adidas hiking shoes.', gender: 'pria' },
+  { id: 'p16', name: 'SEPATU-DELTA-6', category: 'sepatu', price: 1950000, image_url: 'assets/produk/sepatu/SEPATU-DELTA-6-.jpg', description: 'Tactical Delta 6 boots.', gender: 'pria' },
+  { id: 'p17', name: 'Sepatu-Eiger', category: 'sepatu', price: 2100000, image_url: 'assets/produk/sepatu/Sepatu-Eiger.jpg', description: 'Reliable Eiger hiking footwear.', gender: 'pria' },
+  { id: 'p18', name: 'Sepatu-Merrell', category: 'sepatu', price: 2475000, image_url: 'assets/produk/sepatu/Sepatu-Merrell-.jpg', description: 'High-quality Merrell trail shoes.', gender: 'pria' },
+  { id: 'p19', name: 'Sepatu', category: 'sepatu', price: 1200000, image_url: 'assets/produk/sepatu/Sepatu.jpg', description: 'Generic but sturdy hiking shoe.', gender: 'pria' },
+  { id: 'p20', name: 'sepatu-converse', category: 'sepatu', price: 900000, image_url: 'assets/produk/sepatu/sepatu-converse.jpeg', description: 'Classic Converse for casual trails.', gender: 'pria' },
+  { id: 'p21', name: 'Tas-Ost-Rei', category: 'tas', price: 1425000, image_url: 'assets/produk/tas/Tas--Ost-Rei.jpg', description: 'Durable Ost Rei backpack.', gender: 'pria' },
+  { id: 'p22', name: 'Tas-Consina', category: 'tas', price: 1575000, image_url: 'assets/produk/tas/Tas-Consina.jpg', description: 'Spacious Consina trekking bag.', gender: 'pria' },
+  { id: 'p23', name: 'Tas-Deuter', category: 'tas', price: 1875000, image_url: 'assets/produk/tas/Tas-Deuter.jpg', description: 'Comfortable Deuter hiking backpack.', gender: 'pria' },
+  { id: 'p24', name: 'Tas-Eiger', category: 'tas', price: 1725000, image_url: 'assets/produk/tas/Tas-Eiger.jpg', description: 'Versatile Eiger backpack for all needs.', gender: 'pria' },
+  { id: 'p25', name: 'Tas-Moods', category: 'tas', price: 1050000, image_url: 'assets/produk/tas/Tas-Moods.jpg', description: 'Stylish Moods daypack.', gender: 'pria' },
+  { id: 'p26', name: 'Tas-Royal-Mountain', category: 'tas', price: 1950000, image_url: 'assets/produk/tas/Tas-Royal-Mountain.jpg', description: 'Large capacity Royal Mountain expedition bag.', gender: 'pria' },
+  { id: 'p27', name: 'Tenda-Camping', category: 'tenda', price: 3000000, image_url: 'assets/produk/tenda/Tenda-Camping.jpg', description: 'Easy setup camping tent.' },
+  { id: 'p28', name: 'Tenda-Consina', category: 'tenda', price: 3300000, image_url: 'assets/produk/tenda/Tenda-Consina.jpg', description: 'Weatherproof Consina tent.' },
+  { id: 'p29', name: 'Tenda-Dome', category: 'tenda', price: 2700000, image_url: 'assets/produk/tenda/Tenda-Dome.jpg', description: 'Classic dome tent for various conditions.' },
+  { id: 'p30', name: 'Tenda-Eiger-E12', category: 'tenda', price: 3750000, image_url: 'assets/produk/tenda/Tenda-Eiger-E12.jpg', description: 'Spacious Eiger E12 family tent.' },
+  { id: 'p31', name: 'Tenda-Montana', category: 'tenda', price: 2850000, image_url: 'assets/produk/tenda/Tenda-Montana.jpg', description: 'Robust Montana tent for hikers.' },
+  { id: 'p32', name: 'Tenda-Summer', category: 'tenda', price: 2250000, image_url: 'assets/produk/tenda/Tenda-Summer.jpg', description: 'Lightweight summer tent.' },
+  { id: 'p33', name: 'Jaket Abu', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-abu wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p34', name: 'Jaket Anti Air', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-anti-air wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p35', name: 'Jaket Biru', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-biru wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p36', name: 'Jaket Coklat', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-coklat wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p37', name: 'Jaket Coklat Muda', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-coklat-muda wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p38', name: 'Jaket Hitam', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-hitam wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p39', name: 'Jaket Hitam Biru', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-hitam-biru wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p40', name: 'Jaket Kuning', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-kuning wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p41', name: 'Jaket Orange', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/Jaket-orange wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p42', name: 'Jaket Wsb', category: 'pakaian', price: 100000, image_url: 'assets/produk/pakaian/jaket-wsb wanita.jpg', description: 'Stylish jacket for women.', gender: 'wanita' },
+  { id: 'p43', name: 'Sepatu Abu', category: 'sepatu', price: 100000, image_url: 'assets/produk/sepatu/Sepatu-abu wanita.jpg', description: 'Comfortable shoes for women.', gender: 'wanita' },
+  { id: 'p44', name: 'Sepatu Abu Pink', category: 'sepatu', price: 100000, image_url: 'assets/produk/sepatu/Sepatu-abu-pink wanita.jpg', description: 'Comfortable shoes for women.', gender: 'wanita' },
+  { id: 'p45', name: 'Sepatu Biru', category: 'sepatu', price: 100000, image_url: 'assets/produk/sepatu/Sepatu-biru wanita.jpg', description: 'Comfortable shoes for women.', gender: 'wanita' },
+  { id: 'p46', name: 'Sepatu Coklata', category: 'sepatu', price: 100000, image_url: 'assets/produk/sepatu/Sepatu-coklata wanita.jpg', description: 'Comfortable shoes for women.', gender: 'wanita' },
+  { id: 'p47', name: 'Sepatu Cream', category: 'sepatu', price: 100000, image_url: 'assets/produk/sepatu/Sepatu-cream wanita.jpg', description: 'Comfortable shoes for women.', gender: 'wanita' },
+  { id: 'p48', name: 'Sepatu Hitam', category: 'sepatu', price: 100000, image_url: 'assets/produk/sepatu/Sepatu-hitam wanita.jpg', description: 'Comfortable shoes for women.', gender: 'wanita' },
+  { id: 'p49', name: 'Sepatu Pink', category: 'sepatu', price: 100000, image_url: 'assets/produk/sepatu/Sepatu-pink wanita.jpg', description: 'Comfortable shoes for women.', gender: 'wanita' },
+  { id: 'p50', name: 'Tas Consina', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-consina wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p51', name: 'Tas Eiger', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-eiger wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p52', name: 'Tas Eiger Biru Tua', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-eiger-biru-tua wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p53', name: 'Tas Eiger Hitam', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-eiger-hitam wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p54', name: 'Tas Hijau', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-hijau wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p55', name: 'Tas Hitam', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-hitam wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p56', name: 'Tas Hitam Merah', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-hitam-merah wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p57', name: 'Tas Ndemik', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-ndemik wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' },
+  { id: 'p58', name: 'Tas The North', category: 'tas', price: 100000, image_url: 'assets/produk/tas/Tas-the-north wanita.jpg', description: 'Durable bag for women.', gender: 'wanita' }
+];
+
+const mountainRecommendations = [
+  { id: 'm1', name: 'Gunung Gede', skill_level: 'Beginner', description: 'Perfect for first-timers, offering great views with a gentle slope.', image_url: 'assets/mountains/gede.jpg' },
+  { id: 'm2', name: 'Gunung Rinjani', skill_level: 'Intermediate', description: 'A moderately challenging hike with rewarding panoramic views from the summit.', image_url: 'assets/mountains/rinjani.jpg' },
+  { id: 'm3', name: 'Gunung Bromo', skill_level: 'Beginner', description: 'A peaceful trail leading to a serene summit, ideal for a relaxing day out.', image_url: 'assets/mountains/bromo.jpg' },
+  { id: 'm4', name: 'Gunung Semeru', skill_level: 'Advanced', description: 'A strenuous and technical climb for experienced hikers seeking a thrill.', image_url: 'assets/mountains/semeru.jpg' }
+];
+
+const categories = [
+  { name: 'lainnya', image_url: 'assets/kategori/lainnya.png' },
+  { name: 'pakaian', image_url: 'assets/kategori/pakaian.png' },
+  { name: 'sepatu', image_url: 'assets/kategori/sepatu.png' },
+  { name: 'tas', image_url: 'assets/kategori/tas.png' },
+  { name: 'tenda', image_url: 'assets/kategori/tenda.png' }
+];
+
+// migrateData function from js/db-migration.js (modified)
+async function migrateData() {
+    console.log('Starting data migration to PocketBase via run-migration.js...');
+
+    try {
+        if (typeof products === 'undefined' || typeof mountainRecommendations === 'undefined' || typeof categories === 'undefined') {
+            console.error('Data arrays (products, mountainRecommendations, categories) not found.');
+            return;
+        }
+
+        console.log('Migrating products...');
+        for (const product of products) {
+            const { id, ...cleanProduct } = product;
+            console.log('Attempting to migrate product:', JSON.stringify(cleanProduct, null, 2));
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/products/records`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cleanProduct)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error(`Failed to migrate product ${product.name}: ${response.status}`, errorData);
+            } else {
+                const responseData = await response.json();
+                console.log(`Successfully migrated product: ${product.name}`, responseData);
+            }
+        }
+
+        console.log('Migrating mountain recommendations...');
+        for (const mountain of mountainRecommendations) {
+            const { id, ...cleanMountain } = mountain;
+
+            if (cleanMountain.image_url) {
+                cleanMountain.image_url = cleanMountain.image_url.replace('assets/mountains/', 'assets/gunung/');
+            }
+
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/mountains/records`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cleanMountain)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error(`Failed to migrate mountain ${mountain.name}: ${response.status}`, errorData);
+            } else {
+                console.log(`Migrated mountain: ${mountain.name}`);
+            }
+        }
+
+        console.log('Migrating categories...');
+        for (const category of categories) {
+            const response = await fetch(`${POCKETBASE_URL}/api/collections/categories/records`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(category)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error(`Failed to migrate category ${category.name}: ${response.status}`, errorData);
+            } else {
+                console.log(`Migrated category: ${category.name}`);
+            }
+        }
+
+        console.log('Data migration via run-migration.js completed successfully.');
+    } catch (error) {
+        console.error('An error occurred during data migration via run-migration.js:', error);
+    }
+}
+
+// Call the function
+migrateData().catch(err => console.error('Unhandled error in migrateData:', err));
