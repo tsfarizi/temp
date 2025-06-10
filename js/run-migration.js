@@ -1,4 +1,5 @@
 // run-migration.js
+console.log('Note: This script is intended for manual execution (e.g., via `node js/run-migration.js`) and will attempt to migrate data regardless of previous migrations. It does not check localStorage or any other flag.');
 const fetch = require('node-fetch');
 const POCKETBASE_URL = 'http://127.0.0.1:8090';
 
