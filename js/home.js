@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const superiorProductsRow = document.getElementById('superior-products-row');
     const mountainRecommendationsRow = document.getElementById('mountain-recommendations-row');
+    const mountainDetailModalElement = document.getElementById('mountain-detail-modal');
+    let mountainDetailModal = null;
+    if (mountainDetailModalElement) {
+        mountainDetailModal = new bootstrap.Modal(mountainDetailModalElement);
+    }
 
     function getRandomElements(array, numElements) {
         if (!array || array.length === 0) return [];
@@ -103,7 +108,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             randomRecommendations.forEach(rec => {
                 recommendationsHTML += `
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 mountain-card" data-name="${rec.name}" data-description="${rec.description}" data-image="${rec.image_url}">
                             <img src="${rec.image_url}" class="card-img-top" alt="${rec.name}" style="height: 200px; object-fit: cover;">
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">${rec.name}</h5>
@@ -114,6 +119,32 @@ document.addEventListener('DOMContentLoaded', async function() {
                     </div>`;
             });
             mountainRecommendationsRow.innerHTML = recommendationsHTML;
+
+            // Add click event listeners to show modal with mountain details
+            mountainRecommendationsRow.querySelectorAll('.mountain-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const name = this.dataset.name;
+                    const desc = this.dataset.description;
+                    const img = this.dataset.image;
+
+                    const labelEl = document.getElementById('mountain-detail-modal-label');
+                    const imageEl = document.getElementById('mountain-detail-image');
+                    const nameEl = document.getElementById('mountain-detail-name');
+                    const descEl = document.getElementById('mountain-detail-description');
+
+                    if (labelEl) labelEl.textContent = name;
+                    if (imageEl) {
+                        imageEl.src = img;
+                        imageEl.alt = name;
+                    }
+                    if (nameEl) nameEl.textContent = name;
+                    if (descEl) descEl.textContent = desc;
+
+                    if (mountainDetailModal) {
+                        mountainDetailModal.show();
+                    }
+                });
+            });
         } catch (error) {
             console.error('Gagal memuat rekomendasi gunung:', error);
             mountainRecommendationsRow.innerHTML = '<p>Gagal memuat rekomendasi. Silakan coba lagi nanti.</p>';
