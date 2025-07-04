@@ -119,7 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-            const shippingCost = items.length > 0 ? 10000 : 0;
+            const totalWeight = items.reduce((sum, item) => sum + (item.weight || 0), 0);
+            let shippingCost = 0;
+            if(items.length > 0) {
+                shippingCost = 10000 + Math.ceil(totalWeight) * 5000;
+            }
             const totalAmount = subtotal + shippingCost;
 
             orderSummaryContainer.innerHTML = `
@@ -127,6 +131,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li class="list-group-item d-flex justify-content-between">
                         <span>Subtotal</span>
                         <strong>Rp ${subtotal.toLocaleString('id-ID')}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total Berat</span>
+                        <strong>${totalWeight.toFixed(2)} kg</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span>Pengiriman</span>
@@ -165,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <label for="user-address-input" class="form-label">Alamat Anda:</label>
                     <textarea id="user-address-input" class="form-control" rows="3" placeholder="Masukkan alamat pengiriman Anda">${currentAddress}</textarea>
                 </div>
-                <button id="save-address-btn" class="btn btn-primary mt-2">Simpan Alamat & Selesaikan Pesanan</button>
+                <button id="save-address-btn" class="btn btn-primary mt-2">Simpan Alamat</button>
                 <button id="back-to-cart-view-from-address" class="btn btn-secondary mt-2">Kembali ke Keranjang</button>
             `;
 
@@ -200,31 +208,35 @@ document.addEventListener('DOMContentLoaded', function() {
                         throw new Error(errorData.message || 'Gagal menyimpan alamat.');
                     }
 
-                    showSuccessNotification("Pesanan selesai! Alamat disimpan.");
+                    showSuccessNotification("Alamat disimpan. Silakan lakukan pembayaran.");
 
-                    if (typeof window.handlePayment === 'function') {
-                        await window.handlePayment(); // Clears cart in PB
-                    } else {
-                        console.error('handlePayment function not found on window object');
-                        showErrorNotification('Critical error: Payment handling function missing.');
-                    }
-
-                    // UI update after successful order
                     if(senderAddressSection) {
                         senderAddressSection.innerHTML = `
-                            <div class="alert alert-success" role="alert">
-                                Pesanan berhasil dibuat! Alamat Anda telah disimpan.
-                            </div>
-                            <button id="view-cart-after-order" class="btn btn-info">Lihat Keranjang</button>
+                            <h4>QR Pembayaran</h4>
+                            <img src="assets/qr/QRIS.jpg" alt="QRIS" class="img-fluid mb-3">
+                            <button id="payment-done-btn" class="btn btn-success">Pembayaran sudah dilakukan</button>
                         `;
-                        document.getElementById('view-cart-after-order')?.addEventListener('click', () => {
-                            showCartView();
-                            window.displayCart(); // Refresh to show empty cart
+                        document.getElementById('payment-done-btn').addEventListener('click', async function() {
+                            if (typeof window.handlePayment === 'function') {
+                                await window.handlePayment();
+                            } else {
+                                console.error('handlePayment function not found on window object');
+                                showErrorNotification('Critical error: Payment handling function missing.');
+                                return;
+                            }
+
+                            senderAddressSection.innerHTML = `
+                                <div class="alert alert-success" role="alert">
+                                    Pesanan berhasil dibuat! Alamat Anda telah disimpan.
+                                </div>
+                                <button id="view-cart-after-order" class="btn btn-info">Lihat Keranjang</button>
+                            `;
+                            document.getElementById('view-cart-after-order')?.addEventListener('click', () => {
+                                showCartView();
+                                window.displayCart();
+                            });
                         });
                     }
-                    // cartItems and orderSummary will be hidden by showAddressFormView,
-                    // and displayCart (called by handlePayment) will refresh them to empty state.
-                    // No need to explicitly show them here again unless desired.
 
                 } catch (error) {
                     console.error('Error saving address or completing order:', error);
